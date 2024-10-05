@@ -17,29 +17,17 @@ const displayCategoryButton = (categories) => {
 const loadCategoryIds = (id) => {
   fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
     .then((res) => res.json())
-    .then((data) => console.log(data.category))
+    .then((data) => displayVideos(data.category))
     .catch((err) => console.log("Error", err));
 };
-// cardDemo lagbe na
-const cardDemo = {
-  category_id: "1001",
-  video_id: "aaaa",
-  thumbnail: "https://i.ibb.co/L1b6xSq/shape.jpg",
-  title: "Shape of You",
-  authors: [
-    {
-      profile_picture: "https://i.ibb.co/D9wWRM6/olivia.jpg",
-      profile_name: "Olivia Mitchell",
-      verified: "",
-    },
-  ],
-  others: {
-    views: "100K",
-    posted_date: "16278",
-  },
-  description:
-    "Dive into the rhythm of 'Shape of You,' a captivating track that blends pop sensibilities with vibrant beats. Created by Olivia Mitchell, this song has already gained 100K views since its release. With its infectious melody and heartfelt lyrics, 'Shape of You' is perfect for fans looking for an uplifting musical experience. Let the music take over as Olivia's vocal prowess and unique style create a memorable listening journey.",
-};
+// Time Function
+function getTime(time) {
+  const hr = parseInt(time / 3600);
+  let reaminingSeconds = time % 3600;
+  const mint = parseInt(reaminingSeconds / 60);
+  reaminingSeconds = mint % 60;
+  return `${hr} hour ${mint} minutes ${reaminingSeconds} ago`;
+}
 
 // LoadVideos
 const LoadVideos = () =>
@@ -50,12 +38,31 @@ const LoadVideos = () =>
 
 const displayVideos = (videos) => {
   const videoContainer = document.getElementById("videos");
+  if (videos.length == 0) {
+    videoContainer.classList.remove("grid");
+    videoContainer.innerHTML = `<div class="flex justify-center items-center flex-col text-center">
+    <img class="w-[100px]"src="./assets/Icon.png"/>
+    <p class='py-4 text-black font-bold'> Oops!! Sorry, There is no <br>content here
+    </p>
+   </div>`;
+    return;
+  }
+  videoContainer.classList.add("grid");
+  videoContainer.innerHTML = "";
   videos.forEach((videos) => {
     const card = document.createElement("div");
     card.classList = "card card-compact";
-    card.innerHTML = `<figure class="h-[200px] rounded-lg">
+    card.innerHTML = `<figure class="h-[200px] rounded-lg  relative">
     <img class="h-full w-full object-cover"
       src=${videos.thumbnail}/>
+       ${
+         videos.others.posted_date?.length === 0
+           ? ""
+           : `<span class="absolute right-2 bottom-2 p-2 bg-black rounded-md text-white text-xs">
+      ${getTime(videos.others.posted_date)}
+      </span>`
+       }
+      
   </figure>
   <div class="flex py-2 gap-4">
   <div>
